@@ -38,9 +38,14 @@ class ToDoList extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.fetchTasks = this.fetchTasks.bind(this);
     }
 
     componentDidMount() {
+        this.fetchTasks(); // get tasks on mount
+    }
+
+    fetchTasks() {
         fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=286")
         .then(checkStatus)
         .then(json)
@@ -59,6 +64,31 @@ class ToDoList extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        let { new_task } = this.state;
+        new_task = new_task.trim();
+        if(!new_task) {
+            return;
+        }
+
+        fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=286", {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                task: {
+                    content: new_task
+                }
+            }),
+        }).then(checkStatus)
+        .then(json)
+        .then((data) => {
+            this.setState({new_task: ''});
+            this.fetchTasks();
+        })
+        .catch((error) => {
+            this.setState({ error: error.message });
+            console.log(error);
+        })
     }
 
     render() {
