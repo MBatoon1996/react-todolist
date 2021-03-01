@@ -84,12 +84,18 @@ var ToDoList = function (_React$Component2) {
 
         _this2.handleChange = _this2.handleChange.bind(_this2);
         _this2.handleSubmit = _this2.handleSubmit.bind(_this2);
+        _this2.fetchTasks = _this2.fetchTasks.bind(_this2);
         return _this2;
     }
 
     _createClass(ToDoList, [{
         key: "componentDidMount",
         value: function componentDidMount() {
+            this.fetchTasks(); // get tasks on mount
+        }
+    }, {
+        key: "fetchTasks",
+        value: function fetchTasks() {
             var _this3 = this;
 
             fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=286").then(checkStatus).then(json).then(function (response) {
@@ -107,7 +113,32 @@ var ToDoList = function (_React$Component2) {
     }, {
         key: "handleSubmit",
         value: function handleSubmit(event) {
+            var _this4 = this;
+
             event.preventDefault();
+            var new_task = this.state.new_task;
+
+            new_task = new_task.trim();
+            if (!new_task) {
+                return;
+            }
+
+            fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=286", {
+                method: "POST",
+                mode: "cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    task: {
+                        content: new_task
+                    }
+                })
+            }).then(checkStatus).then(json).then(function (data) {
+                _this4.setState({ new_task: '' });
+                _this4.fetchTasks();
+            }).catch(function (error) {
+                _this4.setState({ error: error.message });
+                console.log(error);
+            });
         }
     }, {
         key: "render",
