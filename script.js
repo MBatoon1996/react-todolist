@@ -79,7 +79,8 @@ var ToDoList = function (_React$Component2) {
 
         _this2.state = {
             new_task: '',
-            tasks: []
+            tasks: [],
+            filter: 'all'
         };
 
         _this2.handleChange = _this2.handleChange.bind(_this2);
@@ -87,6 +88,7 @@ var ToDoList = function (_React$Component2) {
         _this2.fetchTasks = _this2.fetchTasks.bind(_this2);
         _this2.deleteTask = _this2.deleteTask.bind(_this2);
         _this2.toggleComplete = _this2.toggleComplete.bind(_this2);
+        _this2.toggleFilter = _this2.toggleFilter.bind(_this2);
         return _this2;
     }
 
@@ -182,13 +184,22 @@ var ToDoList = function (_React$Component2) {
             });
         }
     }, {
+        key: "toggleFilter",
+        value: function toggleFilter(e) {
+            console.log(e.target.name);
+            this.setState({
+                filter: e.target.name
+            });
+        }
+    }, {
         key: "render",
         value: function render() {
             var _this7 = this;
 
             var _state = this.state,
                 new_task = _state.new_task,
-                tasks = _state.tasks;
+                tasks = _state.tasks,
+                filter = _state.filter;
 
 
             return React.createElement(
@@ -205,7 +216,15 @@ var ToDoList = function (_React$Component2) {
                             { className: "mb-3" },
                             "To Do List"
                         ),
-                        tasks.length > 0 ? tasks.map(function (task) {
+                        tasks.length > 0 ? tasks.filter(function (task) {
+                            if (filter === 'all') {
+                                return true;
+                            } else if (filter === 'active') {
+                                return !task.completed;
+                            } else {
+                                return task.completed;
+                            }
+                        }).map(function (task) {
                             return React.createElement(Task, {
                                 key: task.id,
                                 task: task,
@@ -216,6 +235,28 @@ var ToDoList = function (_React$Component2) {
                             "p",
                             null,
                             "no tasks here"
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "mt-3" },
+                            React.createElement(
+                                "label",
+                                null,
+                                React.createElement("input", { type: "checkbox", name: "all", checked: filter === "all", onChange: this.toggleFilter }),
+                                " All"
+                            ),
+                            React.createElement(
+                                "label",
+                                null,
+                                React.createElement("input", { type: "checkbox", name: "active", checked: filter === "active", onChange: this.toggleFilter }),
+                                " Active"
+                            ),
+                            React.createElement(
+                                "label",
+                                null,
+                                React.createElement("input", { type: "checkbox", name: "completed", checked: filter === "completed", onChange: this.toggleFilter }),
+                                " Completed"
+                            )
                         ),
                         React.createElement(
                             "form",
